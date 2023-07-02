@@ -11,10 +11,19 @@ class MLP:
 
         return x
 
+    def parameters(self):
+        return [p for layer in self.layers for p in layer.parameters()]
+
 if __name__ == '__main__':
     x = [2.0, 3.0, -1.0]
     n = MLP(3, [4, 4, 1])
-    # print(n(x))
+    n(x)
+
+    print(n.layers[0].neurons[0].w[0].v)
+    print(n.layers[0].neurons[0].w[0].grad)
+
+    # print(len(n.parameters()), n.parameters())
+    print(len(n.parameters()))
 
     xs = [
         [2.0, 3.0, -1.0],
@@ -24,8 +33,20 @@ if __name__ == '__main__':
     ]
 
     ys = [1.0, -1.0, -1.0, 1.0]
+    
     ypred = [n(x) for x in xs]
     print(ypred)
+    loss = sum((yout - ygt) ** 2.0 for ygt, yout in zip(ys, ypred))
+    
+    loss.backward()
+    print(n.layers[0].neurons[0].w[0].v)
+    print(n.layers[0].neurons[0].w[0].grad)
 
-    loss = sum([(yout - ygt) ** 2.0 for ygt, yout in zip(ys, ypred)])
-    print(loss)
+    for p in n.parameters():
+        p.v += -0.01 * p.grad
+
+    ypred = [n(x) for x in xs]
+    print(ypred)
+    loss = sum((yout - ygt) ** 2.0 for ygt, yout in zip(ys, ypred))
+    print(n.layers[0].neurons[0].w[0].v)
+    print(n.layers[0].neurons[0].w[0].grad)

@@ -12,6 +12,9 @@ class Neuron:
         out = act.tanh()
         return out
 
+    def parameters(self):
+        return self.w + [self.b]
+
 
 if __name__ == '__main__':
     x = [2.0, 3.0]

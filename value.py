@@ -64,7 +64,7 @@ class Value:
             return res
 
         if DEBUG == 0:
-            return f'Value(v={self.v})'
+            return f'Value(v={self.v} label={self.label})'
         elif DEBUG == 1:
             items = [f'v={self.v}', f'grad={self.grad}']
 
@@ -132,7 +132,7 @@ class Value:
 
     def __pow__(self, other: int|float) -> 'Value':
         assert isinstance(other, (int, float))
-        res = Value(self.v ** other, label=f'**{other}', op=BinOp.pow, operands=())
+        res = Value(self.v ** other, label=f'**{other}', op=BinOp.pow, operands=(self,))
 
         def _backward():
             self.grad += other * (self.v ** (other - 1)) * res.grad
