@@ -125,11 +125,6 @@ class Value:
         return self * other
 
     def __truediv__(self, other: 'Value') -> 'Value':
-        # if not isinstance(other, Value):
-        #     other = Value(other)
-        #
-        # res = Value(self.v / other.v, op=BinOp.div, operands=(self, other))
-        # return res
         return self * (other ** -1.0)
 
     def __rtruediv__(self, other: 'Value') -> 'Value':
