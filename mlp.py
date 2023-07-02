@@ -34,19 +34,21 @@ if __name__ == '__main__':
 
     ys = [1.0, -1.0, -1.0, 1.0]
     
+    for i in range(1000):
+        ypred = [n(x) for x in xs]
+        print(ypred)
+        loss = sum((yout - ygt) ** 2.0 for ygt, yout in zip(ys, ypred))
+        print(loss)
+
+        for p in n.parameters():
+            p.grad = 0.0
+
+        loss.backward()
+
+        for p in n.parameters():
+            p.v += -0.001 * p.grad
+
     ypred = [n(x) for x in xs]
     print(ypred)
     loss = sum((yout - ygt) ** 2.0 for ygt, yout in zip(ys, ypred))
-    
-    loss.backward()
-    print(n.layers[0].neurons[0].w[0].v)
-    print(n.layers[0].neurons[0].w[0].grad)
-
-    for p in n.parameters():
-        p.v += -0.01 * p.grad
-
-    ypred = [n(x) for x in xs]
-    print(ypred)
-    loss = sum((yout - ygt) ** 2.0 for ygt, yout in zip(ys, ypred))
-    print(n.layers[0].neurons[0].w[0].v)
-    print(n.layers[0].neurons[0].w[0].grad)
+    print(loss)
