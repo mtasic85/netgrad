@@ -1,0 +1,205 @@
+import math
+from enum import Enum
+
+DEBUG = 2
+
+class SOp(Enum):
+    nop = 0
+    set = 1
+    get = 2
+
+class UnOp(Enum):
+    pos = 10
+    neg = 11
+    tanh = 12
+
+class BinOp(Enum):
+    add = 20
+    sub = 21
+    mul = 22
+    div = 23
+    pow = 24
+
+Op: type = SOp | UnOp | BinOp
+
+class Value:
+    def __init__(self, v: int | float, label: str|None=None, op: Op=SOp.set, operands: tuple=()):
+        self.v = v
+        self.label = label
+        self.op = op
+        self.operands = operands
+        self.grad = 0.0
+        self._backward = lambda: None
+
+    def __repr__(self) -> str:
+        def _repr(obj: Value, ident: int=0) -> str:
+            items = [f'v={obj.v}', f'grad={obj.grad}']
+
+            if obj.label is not None:
+                items.append(f'label={obj.label!r}')
+
+            if obj.op != SOp.set:
+                items.append(f'op={obj.op}')
+
+            if obj.operands is not None:
+                items.append('operands=(\n')
+
+                for operand in obj.operands:
+                    item = _repr(operand, ident + 2)
+                    items.append(f'{item},\n')
+
+                ident_str = ' ' * ident
+                items.append(f'{ident_str})')
+
+            ident_str = ' ' * ident
+            
+            res = ''.join((
+                ident_str,
+                'Value(',
+                ' '.join(items),
+                ')',
+            ))
+
+            return res
+
+        if DEBUG == 0:
+            return super().__repr__()
+        elif DEBUG == 1:
+            items = [f'v={self.v}', f'grad={self.grad}']
+
+            if self.label is not None:
+                items.append(f'label={self.label!r}')
+
+            if self.op != SOp.set:
+                items.append(f'op={self.op}')
+
+            if self.operands is not None:
+                items.append(f'operands={self.operands}')
+
+            return f'Value({" ".join(items)})'
+        elif DEBUG == 2:
+            return _repr(self, 0)
+        else:
+            raise ValueError(f'Unsupported DEBUG level {DEBUG}')
+
+    def __add__(self, other: 'Value') -> 'Value':
+        res = Value(self.v + other.v, op=BinOp.add, operands=(self, other))
+
+        def _backward():
+            self.grad += 1.0 * res.grad
+            other.grad += 1.0 * res.grad
+        
+        res._backward = _backward
+        return res
+
+    # def __sub__(self, other: 'Value') -> 'Value':
+    #     res = Value(self.v - other.v, op=BinOp.sub, operands=(self, other))
+    #     return res
+
+    def __mul__(self, other: 'Value') -> 'Value':
+        res = Value(self.v * other.v, op=BinOp.mul, operands=(self, other))
+
+        def _backward():
+            self.grad += other.v * res.grad
+            other.grad += self.v * res.grad
+        
+        res._backward = _backward
+        return res
+
+    # def __div__(self, other: 'Value') -> 'Value':
+    #     res = Value(self.v / other.v, op=BinOp.div, operands=(self, other))
+    #     return res
+
+    # def __pow__(self, other: 'Value') -> 'Value':
+    #     res = Value(self.v ** other.v, op=BinOp.pow, operands=(self, other))
+    #     return res
+
+    def tanh(self) -> 'Value':
+        v = self.v
+        t = (math.exp(2 * v) - 1) / (math.exp(2 * v) + 1)
+        res = Value(t, op=UnOp.tanh, operands=(self,))
+
+        def _backward():
+            self.grad += (1.0 - t ** 2.0) * res.grad
+
+            # for operand in res.operands:
+            #     operand.backward()
+        
+        res._backward = _backward
+        return res
+
+    def _build_top_ord(self) -> list['Value']:
+        values = []
+        visited = set()
+
+        def __build_top_ord(v):
+            if v not in visited:
+                visited.add(v)
+
+                for operand in v.operands:
+                    __build_top_ord(operand)
+
+                values.append(v)
+
+        __build_top_ord(self)
+        return values
+
+    def backward(self):
+        top_ord = self._build_top_ord()
+        self.grad = 1.0
+
+        for value in reversed(top_ord):
+            value._backward()
+
+def demo0():
+    a = Value(2.0, 'a')
+    b = Value(-3.0, 'b')
+    c = Value(10.0, 'c')
+    e = a * b; e.label = 'e'
+    d = e + c; d.label = 'd'
+    f = Value(-2.0, 'f')
+    L = d * f; L.label = 'L'
+    print(L)
+
+def demo1():
+    x1 = Value(2.0, 'x1')
+    x2 = Value(0.0, 'x2')
+    w1 = Value(-3.0, 'w1')
+    w2 = Value(1.0, 'w2')
+    b = Value(6.881373, 'b')
+    x1w1 = x1 * w1; x1w1.label = 'x1*w1'
+    x2w2 = x2 * w2; x2w2.label = 'x2*w2'
+    x1w1x2w2 = x1w1 + x2w2; x1w1x2w2.label = 'x1w1x2w2'
+    n = x1w1x2w2 + b; n.label = 'n'
+    o = n.tanh(); o.label = 'o'
+    o.backward()
+    print(o)
+
+def demo2():
+    a = Value(3.0, 'a')
+    b = a + a; b.label = 'b'
+    b.backward()
+    print(b)
+
+def demo3():
+    a = Value(-2.0, 'a')
+    b = Value(3.0, 'b')
+    d = a * b; d.label = 'd'
+    e = a + b; e.label = 'e'
+    f = d * e; f.label = 'f'
+    f.backward()
+    print(f)
+
+if __name__ == '__main__':
+    x1 = Value(2.0, 'x1')
+    x2 = Value(0.0, 'x2')
+    w1 = Value(-3.0, 'w1')
+    w2 = Value(1.0, 'w2')
+    b = Value(6.881373, 'b')
+    x1w1 = x1 * w1; x1w1.label = 'x1*w1'
+    x2w2 = x2 * w2; x2w2.label = 'x2*w2'
+    x1w1x2w2 = x1w1 + x2w2; x1w1x2w2.label = 'x1w1x2w2'
+    n = x1w1x2w2 + b; n.label = 'n'
+    o = n.tanh(); o.label = 'o'
+    o.backward()
+    print(o)
