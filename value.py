@@ -1,7 +1,7 @@
 import math
 from enum import Enum
 
-DEBUG = 2
+DEBUG = 0
 
 class SOp(Enum):
     nop = 0
@@ -64,7 +64,7 @@ class Value:
             return res
 
         if DEBUG == 0:
-            return super().__repr__()
+            return f'Value(v={self.v})'
         elif DEBUG == 1:
             items = [f'v={self.v}', f'grad={self.grad}']
 

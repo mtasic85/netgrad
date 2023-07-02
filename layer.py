@@ -6,7 +6,7 @@ class Layer:
 
     def __call__(self, x):
         outs = [n(x) for n in self.neurons]
-        return outs
+        return outs[0] if len(outs) == 1 else outs
 
 if __name__ == '__main__':
     x = [2.0, 3.0]
