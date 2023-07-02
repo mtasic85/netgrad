@@ -12,6 +12,7 @@ class UnOp(Enum):
     pos = 10
     neg = 11
     tanh = 12
+    exp = 13
 
 class BinOp(Enum):
     add = 20
@@ -41,9 +42,9 @@ class Value:
             if obj.op != SOp.set:
                 items.append(f'op={obj.op}')
 
-            if obj.operands is not None:
+            if obj.operands:
                 items.append('operands=(\n')
-
+    
                 for operand in obj.operands:
                     item = _repr(operand, ident + 2)
                     items.append(f'{item},\n')
@@ -82,7 +83,13 @@ class Value:
         else:
             raise ValueError(f'Unsupported DEBUG level {DEBUG}')
 
+    def __neg__(self) -> 'Value':
+        return self * -1
+
     def __add__(self, other: 'Value') -> 'Value':
+        if not isinstance(other, Value):
+            other = Value(other)
+
         res = Value(self.v + other.v, op=BinOp.add, operands=(self, other))
 
         def _backward():
@@ -92,11 +99,19 @@ class Value:
         res._backward = _backward
         return res
 
-    # def __sub__(self, other: 'Value') -> 'Value':
-    #     res = Value(self.v - other.v, op=BinOp.sub, operands=(self, other))
-    #     return res
+    def __radd__(self, other: 'Value') -> 'Value':
+        return self + other
+
+    def __sub__(self, other: 'Value') -> 'Value':
+        return self + (-other)
+
+    def __rsub__(self, other: 'Value') -> 'Value':
+        return self - other
 
     def __mul__(self, other: 'Value') -> 'Value':
+        if not isinstance(other, Value):
+            other = Value(other)
+
         res = Value(self.v * other.v, op=BinOp.mul, operands=(self, other))
 
         def _backward():
@@ -106,24 +121,47 @@ class Value:
         res._backward = _backward
         return res
 
-    # def __div__(self, other: 'Value') -> 'Value':
-    #     res = Value(self.v / other.v, op=BinOp.div, operands=(self, other))
-    #     return res
+    def __rmul__(self, other: 'Value') -> 'Value':
+        return self * other
 
-    # def __pow__(self, other: 'Value') -> 'Value':
-    #     res = Value(self.v ** other.v, op=BinOp.pow, operands=(self, other))
-    #     return res
+    def __truediv__(self, other: 'Value') -> 'Value':
+        # if not isinstance(other, Value):
+        #     other = Value(other)
+        #
+        # res = Value(self.v / other.v, op=BinOp.div, operands=(self, other))
+        # return res
+        return self * (other ** -1.0)
+
+    def __rtruediv__(self, other: 'Value') -> 'Value':
+        return self / other
+
+    def __pow__(self, other: int|float) -> 'Value':
+        assert isinstance(other, (int, float))
+        res = Value(self.v ** other, label=f'**{other}', op=BinOp.pow, operands=())
+
+        def _backward():
+            self.grad += other * (self.v ** (other - 1)) * res.grad
+        
+        res._backward = _backward
+        return res
 
     def tanh(self) -> 'Value':
-        v = self.v
-        t = (math.exp(2 * v) - 1) / (math.exp(2 * v) + 1)
+        x = self.v
+        t = (math.exp(2 * x) - 1) / (math.exp(2 * x) + 1)
         res = Value(t, op=UnOp.tanh, operands=(self,))
 
         def _backward():
             self.grad += (1.0 - t ** 2.0) * res.grad
+        
+        res._backward = _backward
+        return res
 
-            # for operand in res.operands:
-            #     operand.backward()
+    def exp(self) -> 'Value':
+        x = self.v
+        res = Value(math.exp(x), op=UnOp.exp, operands=(self,))
+
+        def _backward():
+            self.grad += res.v * res.grad
         
         res._backward = _backward
         return res
@@ -190,7 +228,7 @@ def demo3():
     f.backward()
     print(f)
 
-if __name__ == '__main__':
+def demo4():
     x1 = Value(2.0, 'x1')
     x2 = Value(0.0, 'x2')
     w1 = Value(-3.0, 'w1')
@@ -200,6 +238,11 @@ if __name__ == '__main__':
     x2w2 = x2 * w2; x2w2.label = 'x2*w2'
     x1w1x2w2 = x1w1 + x2w2; x1w1x2w2.label = 'x1w1x2w2'
     n = x1w1x2w2 + b; n.label = 'n'
-    o = n.tanh(); o.label = 'o'
+    # o = n.tanh(); o.label = 'o'
+    e = (2 * n).exp(); e.label = 'e'
+    o = (e - 1) / (e + 1); o.label = 'o'
     o.backward()
     print(o)
+
+if __name__ == '__main__':
+    demo4()
