@@ -114,6 +114,10 @@ class Tensor:
     def eye(cls, dim: int, requires_grad: bool=False, dtype=np.float32) -> Self:
         return Tensor(np.eye(dim, dtype=dtype), requires_grad=requires_grad)
 
+    def sum(self, axis=None, keepdims=False):
+        # https://numpy.org/doc/stable/reference/generated/numpy.sum.html#numpy.sum
+        return Tensor(self.data.sum(axis=axis, keepdims=keepdims))
+
     def numpy(self) -> np.ndarray:
         return self.data
 

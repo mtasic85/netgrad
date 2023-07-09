@@ -221,3 +221,12 @@ def test_eye():
     a_t = torch.eye(3)
     
     np.testing.assert_allclose(a_n.numpy(), a_t.numpy())
+
+def test_sum():
+    a_n = tensor.Tensor([[1, 2, 3], [2, 3, 4]])
+    b_n = a_n.sum()
+
+    a_t = torch.Tensor([[1, 2, 3], [2, 3, 4]])
+    b_t = a_t.sum()
+    
+    np.testing.assert_allclose(b_n.numpy(), b_t.numpy())

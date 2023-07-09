@@ -142,3 +142,9 @@ def test_relu():
 def test_eye():
     a = tensor.Tensor.eye(3)
     np.testing.assert_allclose(a.numpy(), np.eye(3))
+
+def test_sum():
+    a = tensor.Tensor([[1, 2, 3], [2, 3, 4]])
+    b = a.sum()
+    
+    np.testing.assert_allclose(b.numpy(), a.numpy().sum())
