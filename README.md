@@ -1,5 +1,6 @@
 # netgrad
-A (not even a toy) autograd engine
+
+A (not even a toy) autograd engine.
 
 
 ## Development
@@ -26,5 +27,5 @@ pip install -r requirements.txt
 
 Tests:
 ```bash
-DEBUG=1 python -m pytest -v
+DEBUG=1 python -B -m pytest -v
 ```

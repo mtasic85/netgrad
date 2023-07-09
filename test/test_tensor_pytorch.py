@@ -136,13 +136,24 @@ def test_pow_scalar():
     
     np.testing.assert_allclose(c_n.numpy(), c_t.numpy())
 
-def test_matmul():
+def test_matmul_1x3_0():
     a_n = tensor.Tensor([1, 2, 3])
     b_n = tensor.Tensor([2, 3, 4])
     c_n = a_n @ b_n
 
     a_t = torch.Tensor([1, 2, 3])
     b_t = torch.Tensor([2, 3, 4])
+    c_t = a_t @ b_t
+    
+    np.testing.assert_allclose(c_n.numpy(), c_t.numpy())
+
+def test_matmul_2x3_0():
+    a_n = tensor.Tensor([[1, 2, 3], [2, 3, 4]])
+    b_n = tensor.Tensor([[2, 3], [4, 5], [6, 7]])
+    c_n = a_n @ b_n
+
+    a_t = torch.Tensor([[1, 2, 3], [2, 3, 4]])
+    b_t = torch.Tensor([[2, 3], [4, 5], [6, 7]])
     c_t = a_t @ b_t
     
     np.testing.assert_allclose(c_n.numpy(), c_t.numpy())
