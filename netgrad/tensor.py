@@ -48,6 +48,9 @@ class Tensor:
             items.append(')')
             return ''.join(items)
 
+    def __pos__(self) -> Self:
+        return Tensor(self.data)
+
     def __neg__(self) -> Self:
         return Tensor(0.0 - self.data)
 
