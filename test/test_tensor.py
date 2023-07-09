@@ -148,3 +148,15 @@ def test_sum():
     b = a.sum()
     
     np.testing.assert_allclose(b.numpy(), a.numpy().sum())
+
+def test_transpose():
+    a = tensor.Tensor([[1, 2, 3], [2, 3, 4]])
+    b = a.transpose(1, 0)
+    
+    np.testing.assert_allclose(b.numpy(), a.numpy().transpose())
+
+def test_T():
+    a = tensor.Tensor([[1, 2, 3], [2, 3, 4]])
+    b = a.T
+    
+    np.testing.assert_allclose(b.numpy(), a.numpy().T)

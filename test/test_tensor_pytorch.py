@@ -230,3 +230,21 @@ def test_sum():
     b_t = a_t.sum()
     
     np.testing.assert_allclose(b_n.numpy(), b_t.numpy())
+
+def test_transpose():
+    a_n = tensor.Tensor([[1, 2, 3], [2, 3, 4]])
+    b_n = a_n.transpose(1, 0)
+
+    a_t = torch.Tensor([[1, 2, 3], [2, 3, 4]])
+    b_t = a_t.transpose(1, 0)
+    
+    np.testing.assert_allclose(b_n.numpy(), b_t.numpy())
+
+def test_T():
+    a_n = tensor.Tensor([[1, 2, 3], [2, 3, 4]])
+    b_n = a_n.T
+
+    a_t = torch.Tensor([[1, 2, 3], [2, 3, 4]])
+    b_t = a_t.T
+    
+    np.testing.assert_allclose(b_n.numpy(), b_t.numpy())

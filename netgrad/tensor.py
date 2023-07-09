@@ -28,7 +28,19 @@ class Tensor:
         if DEBUG == 0:
             return object.__repr__(self)
         else:
-            return f'{type(self).__name__}(data={self.data})'
+            items = []
+            items.append(type(self).__name__)
+            items.append('(')
+
+            subitems = []
+            subitems.append(f'data={self.data}')
+
+            if self.requires_grad:
+                subitems.append(f'requires_grad={self.requires_grad}')
+
+            items.append(' '.join(subitems))
+            items.append(')')
+            return ''.join(items)
 
     def __add__(self, other: TensorDataArg) -> Self:
         if not isinstance(other, Tensor):
@@ -92,6 +104,8 @@ class Tensor:
 
         return Tensor(self.data.dot(other.data))
 
+    matmul = __matmul__
+
     def __eq__(self, other: Self) -> Self:
         return Tensor(np.equal(self.data, other.data)) # dtype=np.bool_
 
@@ -118,6 +132,13 @@ class Tensor:
         # https://numpy.org/doc/stable/reference/generated/numpy.sum.html#numpy.sum
         return Tensor(self.data.sum(axis=axis, keepdims=keepdims))
 
+    def transpose(self, axis0=1, axis1=0) -> Self:
+        return Tensor(self.data.transpose(axis0, axis1))
+
+    @property
+    def T(self):
+        return self.transpose()
+
     def numpy(self) -> np.ndarray:
         return self.data
 
@@ -139,14 +160,37 @@ class Tensor:
             raise TensorError('This tensor is not backpropagated, requires_grad is set to False')
 
         return self._grad_fn
+
+    def backward(self):
+        pass
     
-
-
-if __name__ == '__main__':
-    DEBUG = 1
+def demo0():
     a = Tensor([1, 2, 3])
     b = Tensor([2, 3, 4])
     print(a)
     print(b)
     c = a + b
     print(c)
+
+def demo1():
+    u = Tensor([[1, 2, 3], [4, 5, 6]])
+    v = u.T
+    w = v.T
+    print(u)
+    print(v)
+    print(w)
+
+if __name__ == '__main__':
+    DEBUG = 1
+
+    x = Tensor.eye(3, requires_grad=True)
+    y = Tensor([[2.0,0,-2.0]], requires_grad=True)
+    z = y.matmul(x).sum()
+    z.backward()
+
+    print(x)
+    print(y)
+    print(z)
+
+    # print(x.grad.numpy())  # dz/dx
+    # print(y.grad.numpy())  # dz/dy
