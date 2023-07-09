@@ -1,106 +1,42 @@
 import os
-from enum import Enum, auto
 from typing import Self
 from functools import wraps
 
 import numpy as np
 
+from defs import TensorData
+from backend import Backend, NumPyBackend
+from op import *
 
 DEBUG = int(os.getenv('DEBUG') or '0', 0)
-
-TensorData = np.ndarray | tuple | list | int | float
-
-
-class SOpCode(Enum):
-    nop = auto()
-    set = auto()
-    get = auto()
-    eye = auto()
-
-class UnOpCode(Enum):
-    pos = auto()
-    neg = auto()
-    exp = auto()
-    tanh = auto()
-    sigmoid = auto()
-    relu = auto()
-    sum = auto()
-    transpose = auto()
-
-class BinOpCode(Enum):
-    add = auto()
-    sub = auto()
-    mul = auto()
-    div = auto()
-    pow = auto()
-    matmul = auto()
-    eq = auto()
-    lt = auto()
-
-OpCode: type = SOpCode | UnOpCode | BinOpCode
-
-
-class OpError(Exception):
-    pass
-
-
-class Op:
-    def __init__(self, opcode: OpCode, operands: list['Tensor'] | tuple['Tensor']=()):
-        self.opcode = opcode
-        self.operands = operands
-        self.requires_grad = any(n.requires_grad for n in operands)
-
-    def forward(self, *args, **kwargs):
-        raise NotImplementedError('forward')
-
-    def backward(self, *args, **kwargs):
-        raise NotImplementedError('forward')
-
-
-class NopOp(Op):
-    # FIXME: implement, probably
-    pass
-
-
-class SetOp(Op):
-    def __init__(self, data: TensorData, **kwargs):
-        super().__init__(opcode=SOpCode.set, **kwargs)
-        self.data = data
-
-    def forward(self):
-        pass
-
-    def backward(self):
-        pass
-
-
-class Backend:
-    pass
-
-
-class NumPyBackend(Backend):
-    pass
-
-
-BACKENDS = {
-    'numpy': NumPyBackend,
-}
 
 
 class TensorError(Exception):
     pass
 
 
-class Tensor:
+class TensorType(type):
+    def __init__(cls, backend: Backend=NumPyBackend, *args, **kwargs):
+        super().__init__(cls, *args, **kwargs)
+        cls._backend = backend
+
+
+class Tensor(metaclass=TensorType):
+    @staticmethod
+    def use_backend(backend: Backend) -> TensorType:
+        cls = TensorType(backend=backend)
+        return cls
+
     def __init__(self, data: TensorData, *, requires_grad: bool=False, dtype=np.float32):
         if not isinstance(data, np.ndarray):
             data = np.array(data, dtype=dtype)
         
         self.data = data
         self.requires_grad = requires_grad
+        self._backend = None
         self._grad = None
         self._grad_fn = None
-        self._op = SetOp(data)
+        # self._op = self._backend.SetOp(data)
 
     def __repr__(self):
         if DEBUG == 0:
@@ -274,6 +210,8 @@ def demo1():
 
 if __name__ == '__main__':
     DEBUG = 1
+
+    # Tensor = Tensor.use_backend(NumPyBackend)
 
     x = Tensor.eye(3, requires_grad=True)
     y = Tensor([[2.0,0,-2.0]], requires_grad=True)
