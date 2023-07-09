@@ -25,7 +25,12 @@ Install requirements:
 pip install -r requirements.txt
 ```
 
-Tests:
+Run demos:
+```bash
+python -B netgrad/tensor.py
+```
+
+Run tests:
 ```bash
 DEBUG=1 python -B -m pytest -v
 ```
