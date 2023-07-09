@@ -10,12 +10,19 @@ DEBUG = int(os.getenv('DEBUG') or '0', 0)
 TensorDataArg = np.ndarray | tuple | list | int | float
 
 
+class TensorError(Exception):
+    pass
+
+
 class Tensor:
-    def __init__(self, data: TensorDataArg, dtype=np.float32):
+    def __init__(self, data: TensorDataArg, *, requires_grad: bool=False, dtype=np.float32):
         if not isinstance(data, np.ndarray):
             data = np.array(data, dtype=dtype)
         
         self.data = data
+        self.requires_grad = requires_grad
+        self._grad = None
+        self._grad_fn = None
 
     def __repr__(self):
         if DEBUG == 0:
@@ -85,6 +92,12 @@ class Tensor:
 
         return Tensor(self.data.dot(other.data))
 
+    def __eq__(self, other: Self) -> Self:
+        return Tensor(np.equal(self.data, other.data)) # dtype=np.bool_
+
+    def __lt__(self, other: Self) -> Self:
+        return Tensor(np.less(self.data, other.data)) # dtype=np.bool_
+
     def exp(self) -> Self:
         return Tensor(np.exp(self.data))
 
@@ -97,11 +110,9 @@ class Tensor:
     def relu(self) -> Self:
         return Tensor(np.maximum(0, self.data))
 
-    def __eq__(self, other: Self) -> Self:
-        return Tensor(np.equal(self.data, other.data)) # dtype=np.bool_
-
-    def __lt__(self, other: Self) -> Self:
-        return Tensor(np.less(self.data, other.data)) # dtype=np.bool_
+    @classmethod
+    def eye(cls, dim: int, requires_grad: bool=False, dtype=np.float32) -> Self:
+        return Tensor(np.eye(dim, dtype=dtype), requires_grad=requires_grad)
 
     def numpy(self) -> np.ndarray:
         return self.data
@@ -109,6 +120,22 @@ class Tensor:
     @property
     def dtype(self) -> np.dtype:
         return self.data.dtype
+
+    @property
+    def shape(self) -> tuple:
+        return self.data.shape
+
+    @property
+    def grad(self):
+        return self._grad
+
+    @property
+    def grad_fn(self):
+        if not self.requires_grad:
+            raise TensorError('This tensor is not backpropagated, requires_grad is set to False')
+
+        return self._grad_fn
+    
 
 
 if __name__ == '__main__':

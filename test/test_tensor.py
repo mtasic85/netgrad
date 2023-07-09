@@ -138,3 +138,7 @@ def test_relu():
     b = a.relu()
     
     np.testing.assert_allclose(b.numpy(), np.maximum(0, a.numpy()))
+
+def test_eye():
+    a = tensor.Tensor.eye(3)
+    np.testing.assert_allclose(a.numpy(), np.eye(3))

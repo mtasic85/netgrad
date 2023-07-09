@@ -215,3 +215,9 @@ def test_relu():
     b_t = a_t.relu()
     
     np.testing.assert_allclose(b_n.numpy(), b_t.numpy())
+
+def test_eye():
+    a_n = tensor.Tensor.eye(3)
+    a_t = torch.eye(3)
+    
+    np.testing.assert_allclose(a_n.numpy(), a_t.numpy())
