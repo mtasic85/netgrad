@@ -49,7 +49,7 @@ class Tensor:
             return ''.join(items)
 
     def __neg__(self) -> Self:
-        return Tensor(self.data * -1)
+        return Tensor(0.0 - self.data)
 
     def __add__(self, other: TensorDataArg) -> Self:
         if not isinstance(other, Tensor):
@@ -202,6 +202,8 @@ if __name__ == '__main__':
     print(y)
     print(z)
     print(w)
+
+    +w
 
     # print(x.grad.numpy())  # dw/dx
     # print(y.grad.numpy())  # dw/dy
