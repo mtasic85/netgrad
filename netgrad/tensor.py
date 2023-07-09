@@ -74,6 +74,8 @@ class Tensor:
 
         return Tensor(self.data ** other.data)
 
+    pow = __pow__
+
     def __rpow__(self, other: TensorDataArg) -> Self:
         return self ** other
 
@@ -82,6 +84,18 @@ class Tensor:
             other = Tensor(other.data)
 
         return Tensor(self.data.dot(other.data))
+
+    def exp(self) -> Self:
+        return Tensor(np.exp(self.data))
+
+    def tanh(self) -> Self:
+        return Tensor(np.tanh(self.data))
+
+    def sigmoid(self) -> Self:
+        return Tensor(1.0 / (1.0 + np.exp(-self.data)))
+
+    def relu(self) -> Self:
+        return Tensor(np.maximum(0, self.data))
 
     def __eq__(self, other: Self) -> Self:
         return Tensor(np.equal(self.data, other.data)) # dtype=np.bool_

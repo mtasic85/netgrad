@@ -179,3 +179,39 @@ def test_lt():
     c_t = a_t < b_t
     
     np.testing.assert_allclose(c_n.numpy(), c_t.numpy())
+
+def test_exp():
+    a_n = tensor.Tensor([1, 2, 3])
+    b_n = a_n.exp()
+
+    a_t = torch.Tensor([1, 2, 3])
+    b_t = a_t.exp()
+    
+    np.testing.assert_allclose(b_n.numpy(), b_t.numpy())
+
+def test_tanh():
+    a_n = tensor.Tensor([1, 2, 3])
+    b_n = a_n.tanh()
+
+    a_t = torch.Tensor([1, 2, 3])
+    b_t = a_t.tanh()
+    
+    np.testing.assert_allclose(b_n.numpy(), b_t.numpy())
+
+def test_sigmoid():
+    a_n = tensor.Tensor([1, 2, 3])
+    b_n = a_n.sigmoid()
+
+    a_t = torch.Tensor([1, 2, 3])
+    b_t = a_t.sigmoid()
+    
+    np.testing.assert_allclose(b_n.numpy(), b_t.numpy())
+
+def test_relu():
+    a_n = tensor.Tensor([1, 2, 3])
+    b_n = a_n.relu()
+
+    a_t = torch.Tensor([1, 2, 3])
+    b_t = a_t.relu()
+    
+    np.testing.assert_allclose(b_n.numpy(), b_t.numpy())

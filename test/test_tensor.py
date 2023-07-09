@@ -114,3 +114,27 @@ def test_lt():
     c = a < b
     
     np.testing.assert_allclose(c.numpy(), a.numpy() < b.numpy())
+
+def test_exp():
+    a = tensor.Tensor([1, 2, 3])
+    b = a.exp()
+    
+    np.testing.assert_allclose(b.numpy(), np.exp(a.numpy()))
+
+def test_tanh():
+    a = tensor.Tensor([1, 2, 3])
+    b = a.tanh()
+    
+    np.testing.assert_allclose(b.numpy(), np.tanh(a.numpy()))
+
+def test_sigmoid():
+    a = tensor.Tensor([1, 2, 3])
+    b = a.sigmoid()
+    
+    np.testing.assert_allclose(b.numpy(), 1.0 / (1.0 + np.exp(-a.numpy())))
+
+def test_relu():
+    a = tensor.Tensor([1, 2, 3])
+    b = a.relu()
+    
+    np.testing.assert_allclose(b.numpy(), np.maximum(0, a.numpy()))
