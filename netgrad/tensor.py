@@ -1,4 +1,5 @@
 import os
+from enum import Enum, auto
 from typing import Self
 from functools import wraps
 
@@ -7,7 +8,83 @@ import numpy as np
 
 DEBUG = int(os.getenv('DEBUG') or '0', 0)
 
-TensorDataArg = np.ndarray | tuple | list | int | float
+TensorData = np.ndarray | tuple | list | int | float
+
+
+class SOpCode(Enum):
+    nop = auto()
+    set = auto()
+    get = auto()
+    eye = auto()
+
+class UnOpCode(Enum):
+    pos = auto()
+    neg = auto()
+    exp = auto()
+    tanh = auto()
+    sigmoid = auto()
+    relu = auto()
+    sum = auto()
+    transpose = auto()
+
+class BinOpCode(Enum):
+    add = auto()
+    sub = auto()
+    mul = auto()
+    div = auto()
+    pow = auto()
+    matmul = auto()
+    eq = auto()
+    lt = auto()
+
+OpCode: type = SOpCode | UnOpCode | BinOpCode
+
+
+class OpError(Exception):
+    pass
+
+
+class Op:
+    def __init__(self, opcode: OpCode, operands: list['Tensor'] | tuple['Tensor']=()):
+        self.opcode = opcode
+        self.operands = operands
+        self.requires_grad = any(n.requires_grad for n in operands)
+
+    def forward(self, *args, **kwargs):
+        raise NotImplementedError('forward')
+
+    def backward(self, *args, **kwargs):
+        raise NotImplementedError('forward')
+
+
+class NopOp(Op):
+    # FIXME: implement, probably
+    pass
+
+
+class SetOp(Op):
+    def __init__(self, data: TensorData, **kwargs):
+        super().__init__(opcode=SOpCode.set, **kwargs)
+        self.data = data
+
+    def forward(self):
+        pass
+
+    def backward(self):
+        pass
+
+
+class Backend:
+    pass
+
+
+class NumPyBackend(Backend):
+    pass
+
+
+BACKENDS = {
+    'numpy': NumPyBackend,
+}
 
 
 class TensorError(Exception):
@@ -15,7 +92,7 @@ class TensorError(Exception):
 
 
 class Tensor:
-    def __init__(self, data: TensorDataArg, *, requires_grad: bool=False, dtype=np.float32):
+    def __init__(self, data: TensorData, *, requires_grad: bool=False, dtype=np.float32):
         if not isinstance(data, np.ndarray):
             data = np.array(data, dtype=dtype)
         
@@ -23,6 +100,7 @@ class Tensor:
         self.requires_grad = requires_grad
         self._grad = None
         self._grad_fn = None
+        self._op = SetOp(data)
 
     def __repr__(self):
         if DEBUG == 0:
@@ -54,52 +132,54 @@ class Tensor:
     def __neg__(self) -> Self:
         return Tensor(0.0 - self.data)
 
-    def __add__(self, other: TensorDataArg) -> Self:
+    def __add__(self, other: TensorData) -> Self:
         if not isinstance(other, Tensor):
             other = Tensor(other if isinstance(other, (int, float)) else other.data)
 
         return Tensor(self.data + other.data)
 
-    def __radd__(self, other: TensorDataArg) -> Self:
+    def __radd__(self, other: TensorData) -> Self:
         return self + other
 
-    def __sub__(self, other: TensorDataArg) -> Self:
+    def __sub__(self, other: TensorData) -> Self:
         if not isinstance(other, Tensor):
             other = Tensor(other if isinstance(other, (int, float)) else other.data)
 
         return Tensor(self.data - other.data)
 
-    def __rsub__(self, other: TensorDataArg) -> Self:
+    def __rsub__(self, other: TensorData) -> Self:
         return self - other
 
-    def __mul__(self, other: TensorDataArg) -> Self:
+    def __mul__(self, other: TensorData) -> Self:
         if not isinstance(other, Tensor):
             other = Tensor(other if isinstance(other, (int, float)) else other.data)
 
         return Tensor(self.data * other.data)
 
-    def __rmul__(self, other: TensorDataArg) -> Self:
+    def __rmul__(self, other: TensorData) -> Self:
         return self * other
 
-    def __truediv__(self, other: TensorDataArg) -> Self:
+    def __truediv__(self, other: TensorData) -> Self:
         if not isinstance(other, Tensor):
             other = Tensor(other if isinstance(other, (int, float)) else other.data)
 
         return Tensor(self.data / other.data)
 
-    def __rtruediv__(self, other: TensorDataArg) -> Self:
+    div = __truediv__
+
+    def __rtruediv__(self, other: TensorData) -> Self:
         return self / other
 
-    def __floordiv__(self, other: TensorDataArg) -> Self:
+    def __floordiv__(self, other: TensorData) -> Self:
         if not isinstance(other, Tensor):
             other = Tensor(other if isinstance(other, (int, float)) else other.data)
 
         return Tensor(self.data // other.data)
 
-    def __rfloordiv__(self, other: TensorDataArg) -> Self:
+    def __rfloordiv__(self, other: TensorData) -> Self:
         return self // other
 
-    def __pow__(self, other: TensorDataArg) -> Self:
+    def __pow__(self, other: TensorData) -> Self:
         if not isinstance(other, Tensor):
             other = Tensor(other if isinstance(other, (int, float)) else other.data)
 
@@ -107,10 +187,10 @@ class Tensor:
 
     pow = __pow__
 
-    def __rpow__(self, other: TensorDataArg) -> Self:
+    def __rpow__(self, other: TensorData) -> Self:
         return self ** other
 
-    def __matmul__(self, other: TensorDataArg) -> Self:
+    def __matmul__(self, other: TensorData) -> Self:
         if not isinstance(other, Tensor):
             other = Tensor(other.data)
 
