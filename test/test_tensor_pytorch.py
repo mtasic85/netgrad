@@ -4,6 +4,15 @@ import torch
 from netgrad import tensor
 
 
+def test_neg():
+    a_n = tensor.Tensor([1, 2, 3])
+    b_n = -a_n
+
+    a_t = torch.Tensor([1, 2, 3])
+    b_t = -a_t
+    
+    np.testing.assert_allclose(b_n.numpy(), b_t.numpy())
+
 def test_add():
     a_n = tensor.Tensor([1, 2, 3])
     b_n = tensor.Tensor([2, 3, 4])

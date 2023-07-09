@@ -38,9 +38,18 @@ class Tensor:
             if self.requires_grad:
                 subitems.append(f'requires_grad={self.requires_grad}')
 
+            if self._grad:
+                subitems.append(f'_grad={self._grad}')
+
+            if self._grad_fn:
+                subitems.append(f'_grad_fn={self._grad_fn}')
+
             items.append(' '.join(subitems))
             items.append(')')
             return ''.join(items)
+
+    def __neg__(self) -> Self:
+        return Tensor(self.data * -1)
 
     def __add__(self, other: TensorDataArg) -> Self:
         if not isinstance(other, Tensor):
@@ -185,12 +194,15 @@ if __name__ == '__main__':
 
     x = Tensor.eye(3, requires_grad=True)
     y = Tensor([[2.0,0,-2.0]], requires_grad=True)
-    z = y.matmul(x).sum()
-    z.backward()
+    z = y.matmul(x)
+    w = z.sum()
+    w.backward()
 
     print(x)
     print(y)
     print(z)
+    print(w)
 
-    # print(x.grad.numpy())  # dz/dx
-    # print(y.grad.numpy())  # dz/dy
+    # print(x.grad.numpy())  # dw/dx
+    # print(y.grad.numpy())  # dw/dy
+    # print(z.grad.numpy())  # dw/dz

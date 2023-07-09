@@ -3,6 +3,12 @@ import numpy as np
 from netgrad import tensor
 
 
+def test_neg():
+    a = tensor.Tensor([1, 2, 3])
+    b = -a
+    
+    np.testing.assert_allclose(b.numpy(), -a.numpy())
+
 def test_add():
     a = tensor.Tensor([1, 2, 3])
     b = tensor.Tensor([2, 3, 4])
