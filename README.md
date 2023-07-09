@@ -23,3 +23,8 @@ Install requirements:
 ```bash
 pip install -r requirements.txt
 ```
+
+Tests:
+```bash
+DEBUG=1 python -m pytest -v
+```

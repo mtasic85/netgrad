@@ -7,7 +7,7 @@ import numpy as np
 
 DEBUG = int(os.getenv('DEBUG') or '0', 0)
 
-TensorDataArg = np.ndarray | tuple | list
+TensorDataArg = np.ndarray | tuple | list | int | float
 
 
 class Tensor:
@@ -25,37 +25,63 @@ class Tensor:
 
     def __add__(self, other: TensorDataArg) -> Self:
         if not isinstance(other, Tensor):
-            other = Tensor(other.data)
+            other = Tensor(other if isinstance(other, (int, float)) else other.data)
 
         return Tensor(self.data + other.data)
 
+    def __radd__(self, other: TensorDataArg) -> Self:
+        return self + other
+
     def __sub__(self, other: TensorDataArg) -> Self:
         if not isinstance(other, Tensor):
-            other = Tensor(other.data)
+            other = Tensor(other if isinstance(other, (int, float)) else other.data)
 
         return Tensor(self.data - other.data)
 
+    def __rsub__(self, other: TensorDataArg) -> Self:
+        return self - other
+
     def __mul__(self, other: TensorDataArg) -> Self:
         if not isinstance(other, Tensor):
-            other = Tensor(other.data)
+            other = Tensor(other if isinstance(other, (int, float)) else other.data)
 
         return Tensor(self.data * other.data)
 
+    def __rmul__(self, other: TensorDataArg) -> Self:
+        return self * other
+
     def __truediv__(self, other: TensorDataArg) -> Self:
         if not isinstance(other, Tensor):
-            other = Tensor(other.data)
+            other = Tensor(other if isinstance(other, (int, float)) else other.data)
 
         return Tensor(self.data / other.data)
 
-    __div__ = __truediv__
+    def __rtruediv__(self, other: TensorDataArg) -> Self:
+        return self / other
 
-    def matmul(self, other: TensorDataArg) -> Self:
+    def __floordiv__(self, other: TensorDataArg) -> Self:
+        if not isinstance(other, Tensor):
+            other = Tensor(other if isinstance(other, (int, float)) else other.data)
+
+        return Tensor(self.data // other.data)
+
+    def __rfloordiv__(self, other: TensorDataArg) -> Self:
+        return self // other
+
+    def __pow__(self, other: TensorDataArg) -> Self:
+        if not isinstance(other, Tensor):
+            other = Tensor(other if isinstance(other, (int, float)) else other.data)
+
+        return Tensor(self.data ** other.data)
+
+    def __rpow__(self, other: TensorDataArg) -> Self:
+        return self ** other
+
+    def __matmul__(self, other: TensorDataArg) -> Self:
         if not isinstance(other, Tensor):
             other = Tensor(other.data)
 
         return Tensor(self.data.dot(other.data))
-
-    __matmul__ = matmul
 
     def __eq__(self, other: Self) -> Self:
         return Tensor(np.equal(self.data, other.data)) # dtype=np.bool_
