@@ -1,12 +1,12 @@
+__all__ = ['NumPyBackend']
+
 from .backend import Backend
 from ..tensor.defs import TensorData
 from ..op import *
 
-
 class NopOp(Op):
     # FIXME: implement, probably
     pass
-
 
 class SetOp(Op):
     def __init__(self, data: TensorData, **kwargs):
@@ -18,7 +18,6 @@ class SetOp(Op):
 
     def backward(self):
         pass
-
 
 class NumPyBackend(Backend):
     NopOp = NopOp

@@ -1,5 +1,6 @@
-from enum import Enum, auto
+__all__ = ['SOpCode', 'UnOpCode', 'BinOpCode', 'OpCode', 'OpError', 'Op']
 
+from enum import Enum, auto
 
 class SOpCode(Enum):
     nop = auto()
@@ -29,10 +30,8 @@ class BinOpCode(Enum):
 
 OpCode: type = SOpCode | UnOpCode | BinOpCode
 
-
 class OpError(Exception):
     pass
-
 
 class Op:
     def __init__(self, opcode: OpCode, operands: list['Tensor'] | tuple['Tensor']=()):
