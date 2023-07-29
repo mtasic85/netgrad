@@ -15,19 +15,7 @@ class TensorError(Exception):
     pass
 
 
-# class TensorType(type):
-#     def __init__(cls, backend: Backend=NumPyBackend, *args, **kwargs):
-#         super().__init__(cls, *args, **kwargs)
-#         cls._backend = backend
-
-
-# class Tensor(metaclass=TensorType):
 class Tensor:
-    # @staticmethod
-    # def use_backend(backend: Backend) -> TensorType:
-    #     cls = TensorType(backend=backend)
-    #     return cls
-
     def __init__(self, data: TensorData, *, requires_grad: bool=False, dtype=np.float32):
         if not isinstance(data, np.ndarray):
             data = np.array(data, dtype=dtype)
