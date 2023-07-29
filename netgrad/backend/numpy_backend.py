@@ -1,6 +1,6 @@
 from .backend import Backend
+from ..tensor.defs import TensorData
 from ..op import *
-from ..defs import TensorData
 
 
 class NopOp(Op):

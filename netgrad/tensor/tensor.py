@@ -4,9 +4,9 @@ from functools import wraps
 
 import numpy as np
 
-from netgrad.defs import TensorData
-from netgrad.backend import Backend, NumPyBackend
-from netgrad.op import *
+from .defs import TensorData
+from ..backend import Backend, NumPyBackend
+from ..op import *
 
 DEBUG = int(os.getenv('DEBUG') or '0', 0)
 
