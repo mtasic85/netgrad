@@ -1,6 +1,6 @@
 import numpy as np
 
-from netgrad import NumPyTensor as Tensor
+from netgrad import NPTensor as Tensor
 
 
 def test_pos():

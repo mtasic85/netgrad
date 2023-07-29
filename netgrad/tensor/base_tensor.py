@@ -1,11 +1,11 @@
-__all__ = ['TensorError', 'Tensor']
+__all__ = ['TensorError', 'BaseTensor']
 
 import os
 from typing import Self
 
 import numpy as np
 
-from .defs import TensorData
+from ..defs import TensorData
 # from ..op import *
 
 DEBUG = int(os.getenv('DEBUG') or '0', 0)
@@ -13,13 +13,12 @@ DEBUG = int(os.getenv('DEBUG') or '0', 0)
 class TensorError(Exception):
     pass
 
-class Tensor:
+class BaseTensor:
     def __init__(self, data: TensorData, *, dtype=np.float32, requires_grad: bool=False):
-        # NOTE: subclass should set its internal representation of data
-        self.data = None
-        # NOTE: subclass should set shape based on data
-        self._shape = None
-        self._dtype = dtype
+        if not isinstance(data, np.ndarray):
+            data = np.array(data, dtype=dtype)
+
+        self.data = data
         self.requires_grad = requires_grad
         self._backend = None
         self._grad = None
@@ -40,12 +39,14 @@ class Tensor:
             subitems.append(f'data={self.data}')
 
         subitems.append(f'shape={self.shape}')
+        subitems.append(f'dtype={self.dtype}')
 
         if self.requires_grad:
             subitems.append(f'requires_grad={self.requires_grad}')
 
-        if self._backend:
-            subitems.append(f'_backend={self._backend}')
+        if DEBUG > 1:
+            if self._backend:
+                subitems.append(f'_backend={self._backend}')
 
         if self._grad:
             subitems.append(f'_grad={self._grad}')
@@ -144,15 +145,15 @@ class Tensor:
         return self.transpose()
 
     def numpy(self) -> np.ndarray:
-        raise NotImplementedError('numpy')
+        return self.data
 
     @property
     def shape(self) -> tuple:
-        return self._shape
+        return self.data.shape
 
     @property
     def dtype(self) -> np.dtype:
-        return self._dtype
+        return self.data.dtype
 
     @property
     def grad(self):
@@ -167,43 +168,3 @@ class Tensor:
 
     def backward(self):
         raise NotImplementedError('backward')
-
-"""    
-def demo0():
-    a = Tensor([1, 2, 3])
-    b = Tensor([2, 3, 4])
-    print(a)
-    print(b)
-    c = a + b
-    print(c)
-
-def demo1():
-    u = Tensor([[1, 2, 3], [4, 5, 6]])
-    v = u.T
-    w = v.T
-    print(u)
-    print(v)
-    print(w)
-
-if __name__ == '__main__':
-    DEBUG = 1
-
-    # Tensor = Tensor.use_backend(NumPyBackend)
-
-    x = Tensor.eye(3, requires_grad=True)
-    y = Tensor([[2.0,0,-2.0]], requires_grad=True)
-    z = y.matmul(x)
-    w = z.sum()
-    w.backward()
-
-    print(x)
-    print(y)
-    print(z)
-    print(w)
-
-    +w
-
-    # print(x.grad.numpy())  # dw/dx
-    # print(y.grad.numpy())  # dw/dy
-    # print(z.grad.numpy())  # dw/dz
-"""

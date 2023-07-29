@@ -1,7 +1,7 @@
-__all__ = ['NumPyBackend']
+__all__ = ['NPBackend']
 
 from .backend import Backend
-from ..tensor.defs import TensorData
+from ..defs import TensorData
 from ..op import *
 
 class NopOp(Op):
@@ -19,6 +19,6 @@ class SetOp(Op):
     def backward(self):
         pass
 
-class NumPyBackend(Backend):
+class NPBackend(Backend):
     NopOp = NopOp
     SetOp = SetOp

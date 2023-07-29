@@ -1,7 +1,7 @@
 import numpy as np
 import torch
 
-from netgrad import NumPyTensor as Tensor
+from netgrad import NPTensor as Tensor
 
 
 def test_pos():
