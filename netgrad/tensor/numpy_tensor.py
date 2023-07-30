@@ -45,8 +45,10 @@ class NPTensor(BaseTensor):
 
     def sum(self, axis=None, keepdims=False):
         # https://numpy.org/doc/stable/reference/generated/numpy.sum.html#numpy.sum
-        # op = self._backend.SumOp((self, other))
-        return NPTensor(self.data.sum(axis=axis, keepdims=keepdims))
+        rd = self.requires_grad
+        op = self._backend.SumOp((self,))
+        res = NPTensor(self.data.sum(axis=axis, keepdims=keepdims), requires_grad=rd, op=op)
+        return res
 
     def transpose(self, axis0=1, axis1=0) -> Self:
         return NPTensor(self.data.transpose(axis0, axis1))
@@ -94,10 +96,14 @@ class NPTensor(BaseTensor):
         if not isinstance(other, NPTensor):
             other = NPTensor(other.data)
 
+        rd = self.requires_grad or other.requires_grad
         op = self._backend.MatMulOp((self, other))
-        res = NPTensor(self.data.dot(other.data), requires_grad=True, op=op)
+        res = NPTensor(self.data.dot(other.data), requires_grad=rd, op=op)
         return res
 
+    #
+    # comparison operations
+    #
     def __eq__(self, other: Self) -> Self:
         return NPTensor(np.equal(self.data, other.data)) # dtype=np.bool_
 

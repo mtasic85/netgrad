@@ -3,9 +3,7 @@ __all__ = ['SOpCode', 'UOpCode', 'BOpCode', 'OpCode', 'OpError', 'Op']
 from enum import Enum, auto
 
 class SOpCode(Enum):
-    nop = auto()
     assign = auto()
-    eye = auto()
 
 class UOpCode(Enum):
     pos = auto()
@@ -24,10 +22,12 @@ class BOpCode(Enum):
     div = auto()
     pow = auto()
     matmul = auto()
+
+class COPCode(Enum):
     eq = auto()
     lt = auto()
 
-OpCode: type = SOpCode | UOpCode | BOpCode
+OpCode: type = SOpCode | UOpCode | BOpCode | COPCode
 
 class OpError(Exception):
     pass
