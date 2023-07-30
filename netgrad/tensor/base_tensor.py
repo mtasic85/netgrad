@@ -5,10 +5,8 @@ from typing import Self
 
 import numpy as np
 
-from ..defs import TensorData
+from ..defs import TensorData, COMPACT, DEBUG
 from ..op import *
-
-DEBUG = int(os.getenv('DEBUG') or '0', 0)
 
 class TensorError(Exception):
     pass
@@ -37,25 +35,35 @@ class BaseTensor:
         if DEBUG > 2:
             subitems.append(f'data={self.data}')
 
-        subitems.append(f'shape={self.shape}')
-        subitems.append(f'dtype={self.dtype}')
+        if COMPACT:
+            subitems.append(f'{self.shape}')
 
-        if self.requires_grad:
-            subitems.append(f'requires_grad={self.requires_grad}')
+            if self.dtype != np.float32:
+                subitems.append(f'{self.dtype}')
 
-        if DEBUG > 3:
-            if self._backend:
-                subitems.append(f'_backend={self._backend}')
+            subitems.append(f'{self._op.opcode}')
+        else:
+            subitems.append(f'shape={self.shape}')
 
-            if self._grad:
-                subitems.append(f'_grad={self._grad}')
+            if self.dtype != np.float32:
+                subitems.append(f'dtype={self.dtype}')
 
-            if self._grad_fn:
-                subitems.append(f'_grad_fn={self._grad_fn}')
+            if not self.requires_grad:
+                subitems.append(f'requires_grad={self.requires_grad}')
 
-        if DEBUG > 1:
-            if self._op:
-                subitems.append(f'_op={self._op}')
+            if DEBUG > 3:
+                if self._backend:
+                    subitems.append(f'_backend={self._backend}')
+
+                if self._grad:
+                    subitems.append(f'_grad={self._grad}')
+
+                if self._grad_fn:
+                    subitems.append(f'_grad_fn={self._grad_fn}')
+
+            if DEBUG > 1:
+                if self._op:
+                    subitems.append(f'_op={self._op}')
 
         items.append(' '.join(subitems))
         items.append(')')

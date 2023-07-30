@@ -77,7 +77,7 @@ class NPTensor(BaseTensor):
 
         rd = self.requires_grad or other.requires_grad
         op = self._backend.AddOp((self, other))
-        res = NPTensor(self.data + other.data)
+        res = NPTensor(self.data + other.data, requires_grad=rd, op=op)
         return res
 
     def __sub__(self, other: TensorData) -> Self:
@@ -86,7 +86,7 @@ class NPTensor(BaseTensor):
 
         rd = self.requires_grad or other.requires_grad
         op = self._backend.SubOp((self, other))
-        res = NPTensor(self.data - other.data)
+        res = NPTensor(self.data - other.data, requires_grad=rd, op=op)
         return res
 
     def __mul__(self, other: TensorData) -> Self:
@@ -95,7 +95,7 @@ class NPTensor(BaseTensor):
 
         rd = self.requires_grad or other.requires_grad
         op = self._backend.MulOp((self, other))
-        res = NPTensor(self.data * other.data)
+        res = NPTensor(self.data * other.data, requires_grad=rd, op=op)
         return res
 
     def __truediv__(self, other: TensorData) -> Self:
@@ -104,7 +104,7 @@ class NPTensor(BaseTensor):
 
         rd = self.requires_grad or other.requires_grad
         op = self._backend.DivOp((self, other))
-        res = NPTensor(self.data / other.data)
+        res = NPTensor(self.data / other.data, requires_grad=rd, op=op)
         return res
 
     def __pow__(self, other: TensorData) -> Self:
@@ -113,7 +113,7 @@ class NPTensor(BaseTensor):
 
         rd = self.requires_grad or other.requires_grad
         op = self._backend.PowOp((self, other))
-        res = NPTensor(self.data ** other.data)
+        res = NPTensor(self.data ** other.data, requires_grad=rd, op=op)
         return res
 
     def __matmul__(self, other: TensorData) -> Self:
@@ -131,13 +131,13 @@ class NPTensor(BaseTensor):
     def __eq__(self, other: Self) -> Self:
         rd = self.requires_grad or other.requires_grad
         op = self._backend.MatMulOp((self, other))
-        res = NPTensor(np.equal(self.data, other.data)) # dtype=np.bool_
+        res = NPTensor(np.equal(self.data, other.data), requires_grad=rd, op=op) # dtype=np.bool_
         return res
 
     def __lt__(self, other: Self) -> Self:
         rd = self.requires_grad or other.requires_grad
         op = self._backend.MatMulOp((self, other))
-        res = NPTensor(np.less(self.data, other.data)) # dtype=np.bool_
+        res = NPTensor(np.less(self.data, other.data), requires_grad=rd, op=op) # dtype=np.bool_
         return res
 
     #
