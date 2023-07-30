@@ -5,13 +5,15 @@ from typing import Self
 import numpy as np
 
 from ..defs import TensorData
+from ..op import Op
 from ..backend.numpy_backend import NPBackend
 from .base_tensor import TensorError, BaseTensor
 
 class NPTensor(BaseTensor):
-    def __init__(self, data: TensorData, *, dtype=np.float32, requires_grad: bool=False):
-        super().__init__(data=data, dtype=dtype, requires_grad=requires_grad)
-        self._backend = NPBackend
+    _backend = NPBackend
+
+    def __init__(self, data: TensorData, *, dtype=np.float32, requires_grad: bool=False, op: Op=None):
+        super().__init__(data=data, dtype=dtype, requires_grad=requires_grad, op=op)
 
     def __pos__(self) -> Self:
         return NPTensor(self.data)
@@ -81,7 +83,9 @@ class NPTensor(BaseTensor):
         if not isinstance(other, NPTensor):
             other = NPTensor(other.data)
 
-        return NPTensor(self.data.dot(other.data))
+        op = self._backend.MatMulOp((self, other))
+        res = NPTensor(self.data.dot(other.data), requires_grad=True, op=op)
+        return res
 
     matmul = __matmul__
 

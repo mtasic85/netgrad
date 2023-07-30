@@ -6,7 +6,7 @@ from typing import Self
 import numpy as np
 
 from ..defs import TensorData
-# from ..op import *
+from ..op import *
 
 DEBUG = int(os.getenv('DEBUG') or '0', 0)
 
@@ -14,16 +14,15 @@ class TensorError(Exception):
     pass
 
 class BaseTensor:
-    def __init__(self, data: TensorData, *, dtype=np.float32, requires_grad: bool=False):
+    def __init__(self, data: TensorData, *, dtype=np.float32, requires_grad: bool=False, op: Op=None):
         if not isinstance(data, np.ndarray):
             data = np.array(data, dtype=dtype)
 
         self.data = data
         self.requires_grad = requires_grad
-        self._backend = None
         self._grad = None
         self._grad_fn = None
-        # self._op = self._backend.SetOp(data)
+        self._op = self._backend.SetOp(operands=(self,)) if op is None else op
 
     def __repr__(self):
         if DEBUG == 0:
@@ -35,7 +34,7 @@ class BaseTensor:
 
         subitems = []
 
-        if DEBUG > 1:
+        if DEBUG > 2:
             subitems.append(f'data={self.data}')
 
         subitems.append(f'shape={self.shape}')
@@ -44,15 +43,19 @@ class BaseTensor:
         if self.requires_grad:
             subitems.append(f'requires_grad={self.requires_grad}')
 
-        if DEBUG > 1:
+        if DEBUG > 3:
             if self._backend:
                 subitems.append(f'_backend={self._backend}')
 
-        if self._grad:
-            subitems.append(f'_grad={self._grad}')
+            if self._grad:
+                subitems.append(f'_grad={self._grad}')
 
-        if self._grad_fn:
-            subitems.append(f'_grad_fn={self._grad_fn}')
+            if self._grad_fn:
+                subitems.append(f'_grad_fn={self._grad_fn}')
+
+        if DEBUG > 1:
+            if self._op:
+                subitems.append(f'_op={self._op}')
 
         items.append(' '.join(subitems))
         items.append(')')

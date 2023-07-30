@@ -1,4 +1,4 @@
-__all__ = ['SOpCode', 'UnOpCode', 'BinOpCode', 'OpCode', 'OpError', 'Op']
+__all__ = ['SOpCode', 'UOpCode', 'BOpCode', 'OpCode', 'OpError', 'Op']
 
 from enum import Enum, auto
 
@@ -8,7 +8,7 @@ class SOpCode(Enum):
     get = auto()
     eye = auto()
 
-class UnOpCode(Enum):
+class UOpCode(Enum):
     pos = auto()
     neg = auto()
     exp = auto()
@@ -18,7 +18,7 @@ class UnOpCode(Enum):
     sum = auto()
     transpose = auto()
 
-class BinOpCode(Enum):
+class BOpCode(Enum):
     add = auto()
     sub = auto()
     mul = auto()
@@ -28,7 +28,7 @@ class BinOpCode(Enum):
     eq = auto()
     lt = auto()
 
-OpCode: type = SOpCode | UnOpCode | BinOpCode
+OpCode: type = SOpCode | UOpCode | BOpCode
 
 class OpError(Exception):
     pass
@@ -38,6 +38,9 @@ class Op:
         self.opcode = opcode
         self.operands = operands
         self.requires_grad = any(n.requires_grad for n in operands)
+
+    def __repr__(self) -> str:
+        return f'<Op opcode={self.opcode} operands={self.operands}>'
 
     def forward(self, *args, **kwargs):
         raise NotImplementedError('forward')
