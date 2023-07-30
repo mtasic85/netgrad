@@ -121,22 +121,16 @@ class BaseTensor:
         raise NotImplementedError('__truediv__')
 
     def div(self, other: TensorData) -> Self:
-        return self.__truediv__(other)
+        return self / other
 
     def __rtruediv__(self, other: TensorData) -> Self:
         return self / other
-
-    def __floordiv__(self, other: TensorData) -> Self:
-        raise NotImplementedError('__floordiv__')
-
-    def __rfloordiv__(self, other: TensorData) -> Self:
-        return self // other
 
     def __pow__(self, other: TensorData) -> Self:
         raise NotImplementedError('__pow__')
 
     def pow(self, other: TensorData) -> Self:
-        return self.__pow__(other)
+        return self ** other
 
     def __rpow__(self, other: TensorData) -> Self:
         return self ** other
@@ -145,7 +139,7 @@ class BaseTensor:
         raise NotImplementedError('__matmul__')
 
     def matmul(self, other: TensorData) -> Self:
-        return self.__matmul__(other)
+        return self @ other
 
     def __eq__(self, other: Self) -> Self:
         raise NotImplementedError('__eq__')

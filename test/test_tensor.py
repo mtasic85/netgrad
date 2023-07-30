@@ -119,20 +119,6 @@ def test_truediv_scalar():
     
     np.testing.assert_allclose(c.numpy(), a.numpy() / b)
 
-def test_floordiv():
-    a = Tensor([1, 2, 3])
-    b = Tensor([2, 3, 4])
-    c = a // b
-    
-    np.testing.assert_allclose(c.numpy(), a.numpy() // b.numpy())
-
-def test_floordiv():
-    a = Tensor([1, 2, 3])
-    b = 2
-    c = a // b
-    
-    np.testing.assert_allclose(c.numpy(), a.numpy() // b)
-
 def test_pow():
     a = Tensor([1, 2, 3])
     b = Tensor([2, 3, 4])
