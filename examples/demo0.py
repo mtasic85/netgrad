@@ -21,22 +21,24 @@ def demo1():
     print(w)
 
 def demo2():
-    # Tensor = Tensor.use_backend(NumPyBackend)
-
     x = Tensor.eye(3, requires_grad=True)
     y = Tensor([[2.0, 0, -2.0]], requires_grad=True)
     z = y.matmul(x)
     w = z.sum()
-    w.backward()
 
     print(x)
     print(y)
     print(z)
     print(w)
+    print('---')
 
-    # print(x.grad.numpy())  # dw/dx
-    # print(y.grad.numpy())  # dw/dy
-    # print(z.grad.numpy())  # dw/dz
+    w.backward()
+
+    print('---')
+    print(x.grad.numpy())  # dw/dx
+    print(y.grad.numpy())  # dw/dy
+    print(z.grad.numpy())  # dw/dz
+    print(w.grad.numpy())  # dw/dz
 
 if __name__ == '__main__':
     demo2()

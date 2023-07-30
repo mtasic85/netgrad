@@ -69,6 +69,15 @@ def test_sum():
     
     np.testing.assert_allclose(b_n.numpy(), b_t.numpy())
 
+def test_sum_1d():
+    a_n = Tensor([1, 2, 3])
+    b_n = a_n.sum()
+
+    a_t = torch.Tensor([1, 2, 3])
+    b_t = a_t.sum()
+    
+    np.testing.assert_allclose(b_n.numpy(), b_t.numpy())
+
 def test_transpose():
     a_n = Tensor([[1, 2, 3], [2, 3, 4]])
     b_n = a_n.transpose(1, 0)

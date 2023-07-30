@@ -15,6 +15,18 @@ class NPTensor(BaseTensor):
     def __init__(self, data: TensorData, *, dtype=np.float32, requires_grad: bool=False, op: Op=None):
         super().__init__(data=data, dtype=dtype, requires_grad=requires_grad, op=op)
 
+        if requires_grad:
+            self.grad = NPTensor(np.zeros_like(self.data))
+
+    def __hash__(self) -> int:
+        return id(self)
+
+    def zero_grad(self):
+        if self.grad is None:
+            self.grad = NPTensor(np.zeros_like(self.data))
+        else:
+            self.grad.data.fill(0)
+
     #
     # specialized operations
     #
@@ -139,9 +151,3 @@ class NPTensor(BaseTensor):
         op = self._backend.MatMulOp((self, other))
         res = NPTensor(np.less(self.data, other.data), requires_grad=rd, op=op) # dtype=np.bool_
         return res
-
-    #
-    # propagation
-    #
-    def backward(self):
-        pass

@@ -38,8 +38,8 @@ class Op:
         self.opcode = opcode
         self.operands = operands
         self.requires_grad = any(n.requires_grad for n in operands)
-        self.grad = None
-        self.grad_fn = None
+        # self.grad = None
+        # self.grad_fn = None
 
     def __repr__(self) -> str:
         if DEBUG == 0:
@@ -56,11 +56,11 @@ class Op:
             if not self.requires_grad:
                 subitems.append(f'requires_grad={self.requires_grad}')
 
-            if self.grad is not None:
-                subitems.append(f'grad={self.grad}')
-
-            if self.grad_fn is not None:
-                subitems.append(f'grad_fn={self.grad_fn}')
+            # if self.grad is not None:
+            #     subitems.append(f'grad={self.grad}')
+            #
+            # if self.grad_fn is not None:
+            #     subitems.append(f'grad_fn={self.grad_fn}')
         else:
             if DEBUG > 1:
                 subitems.append(f'opcode={self.opcode}')
@@ -72,12 +72,12 @@ class Op:
             if not self.requires_grad:
                 subitems.append(f'requires_grad={self.requires_grad}')
 
-            if DEBUG > 2:
-                if self.grad is not None:
-                    subitems.append(f'grad={self.grad}')
-
-                if self.grad_fn is not None:
-                    subitems.append(f'grad_fn={self.grad_fn}')
+            # if DEBUG > 2:
+            #     if self.grad is not None:
+            #         subitems.append(f'grad={self.grad}')
+            #
+            #     if self.grad_fn is not None:
+            #         subitems.append(f'grad_fn={self.grad_fn}')
 
         items.append(' '.join(subitems))
         items.append(')')

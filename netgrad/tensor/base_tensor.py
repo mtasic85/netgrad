@@ -19,6 +19,7 @@ class BaseTensor:
         self.data = data
         self.requires_grad = requires_grad
         self.op = self._backend.AssignOp(operands=(self,)) if op is None else op
+        self.grad = None
 
     def __repr__(self):
         if DEBUG == 0:
@@ -67,7 +68,29 @@ class BaseTensor:
         items.append(' '.join(subitems))
         items.append(')')
         return ''.join(items)
+
+    def __hash__(self) -> int:
+        return id(self)
+
+    def zero_grad(self):
+        raise NotImplementedError
     
+    def _build_top_ord(self) -> list[Self]:
+        values = []
+        visited = set()
+
+        def __build_top_ord(v):
+            if v not in visited:
+                visited.add(v)
+
+                for operand in v.op.operands:
+                    __build_top_ord(operand)
+
+                values.append(v)
+
+        __build_top_ord(self)
+        return values
+
     #
     # specialized operations
     #
@@ -168,8 +191,16 @@ class BaseTensor:
     def dtype(self) -> np.dtype:
         return self.data.dtype
 
+    # @property
+    # def grad(self) -> Self:
+    #     return self.op.grad
+
     #
     # propagation
     #
     def backward(self):
-        raise NotImplementedError('backward')
+        top_ord = self._build_top_ord()
+        self.grad = self.__class__(1)
+
+        for t in reversed(top_ord):
+            t.op.backward()

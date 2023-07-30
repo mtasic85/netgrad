@@ -1,5 +1,7 @@
 __all__ = ['NPBackend']
 
+import numpy as np
+
 from .backend import Backend
 from ..defs import TensorData
 from ..op import *
@@ -78,7 +80,11 @@ class SumOp(Op):
         pass
 
     def backward(self):
-        pass
+        A = self.operands[0]
+
+        if A.requires_grad:
+            d = np.ones_like(A.data) * A.grad.data
+            A.grad.data += d
 
 class TransposeOp(Op):
     def __init__(self, operands: list['Tensor'] | tuple['Tensor']=()):
@@ -121,7 +127,15 @@ class MulOp(Op):
         pass
 
     def backward(self):
-        pass
+        A, B = self.operands
+
+        if A.requires_grad:
+            d = B.data * self.grad
+            A.grad.data += d
+
+        if B.requires_grad:
+            d = A.data * self.grad
+            B.grad.data += d
 
 class DivOp(Op):
     def __init__(self, operands: list['Tensor'] | tuple['Tensor']=()):
@@ -151,7 +165,17 @@ class MatMulOp(Op):
         pass
 
     def backward(self):
-        pass
+        A, B = self.operands
+
+        if A.requires_grad:
+            # d = B.T.data @ A.data
+            d = A.data @ B.T.data
+            A.grad.data += d
+
+        if B.requires_grad:
+            # d = A.T.data @ B.data
+            d = B.data @ A.T.data
+            B.grad.data += d
 
 #
 # comparison operations
