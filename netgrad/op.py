@@ -6,7 +6,6 @@ class SOpCode(Enum):
     assign = auto()
 
 class UOpCode(Enum):
-    pos = auto()
     neg = auto()
     exp = auto()
     tanh = auto()

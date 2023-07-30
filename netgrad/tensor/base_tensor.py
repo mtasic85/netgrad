@@ -71,9 +71,6 @@ class BaseTensor:
     #
     # unary operatons
     #
-    def __pos__(self) -> Self:
-        raise NotImplementedError('__pos__')
-
     def __neg__(self) -> Self:
         raise NotImplementedError('__neg__')
 

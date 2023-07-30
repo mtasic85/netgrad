@@ -15,15 +15,6 @@ def test_eye():
 #
 # unary operatons
 #
-def test_pos():
-    a_n = Tensor([1, 2, 3])
-    b_n = +a_n
-
-    a_t = torch.Tensor([1, 2, 3])
-    b_t = +a_t
-    
-    np.testing.assert_allclose(b_n.numpy(), b_t.numpy())
-
 def test_neg():
     a_n = Tensor([1, 2, 3])
     b_n = -a_n

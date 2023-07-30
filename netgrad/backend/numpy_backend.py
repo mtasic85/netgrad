@@ -20,16 +20,6 @@ class AssignOp(Op):
 #
 # unary operatons
 #
-class PosOp(Op):
-    def __init__(self, operands: list['Tensor'] | tuple['Tensor']=()):
-        super().__init__(UOpCode.pos, operands)
-
-    def forward(self):
-        pass
-
-    def backward(self):
-        pass
-
 class NegOp(Op):
     def __init__(self, operands: list['Tensor'] | tuple['Tensor']=()):
         super().__init__(UOpCode.neg, operands)
@@ -194,7 +184,6 @@ class NPBackend(Backend):
     AssignOp = AssignOp
 
     # UOp
-    PosOp = PosOp
     NegOp = NegOp
     ExpOp = ExpOp
     TanhOp = TanhOp

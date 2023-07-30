@@ -25,22 +25,29 @@ class NPTensor(BaseTensor):
     #
     # unary operatons
     #
-    def __pos__(self) -> Self:
-        return NPTensor(self.data)
-
     def __neg__(self) -> Self:
+        rd = self.requires_grad
+        op = self._backend.NegOp((self,))
         return NPTensor(0.0 - self.data)
 
     def exp(self) -> Self:
+        rd = self.requires_grad
+        op = self._backend.SumOp((self,))
         return NPTensor(np.exp(self.data))
 
     def tanh(self) -> Self:
+        rd = self.requires_grad
+        op = self._backend.SumOp((self,))
         return NPTensor(np.tanh(self.data))
 
     def sigmoid(self) -> Self:
+        rd = self.requires_grad
+        op = self._backend.SumOp((self,))
         return NPTensor(1.0 / (1.0 + np.exp(-self.data)))
 
     def relu(self) -> Self:
+        rd = self.requires_grad
+        op = self._backend.SumOp((self,))
         return NPTensor(np.maximum(0, self.data))
 
     def sum(self, axis=None, keepdims=False):

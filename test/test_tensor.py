@@ -12,12 +12,6 @@ def test_eye():
 #
 # unary operatons
 #
-def test_pos():
-    a = Tensor([1, 2, 3])
-    b = -a
-    
-    np.testing.assert_allclose(b.numpy(), -a.numpy())
-
 def test_neg():
     a = Tensor([1, 2, 3])
     b = -a

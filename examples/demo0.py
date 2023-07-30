@@ -34,8 +34,6 @@ def demo2():
     print(z)
     print(w)
 
-    +w
-
     # print(x.grad.numpy())  # dw/dx
     # print(y.grad.numpy())  # dw/dy
     # print(z.grad.numpy())  # dw/dz
