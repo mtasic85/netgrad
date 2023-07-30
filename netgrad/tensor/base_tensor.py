@@ -22,7 +22,7 @@ class BaseTensor:
         self.requires_grad = requires_grad
         self._grad = None
         self._grad_fn = None
-        self._op = self._backend.SetOp(operands=(self,)) if op is None else op
+        self._op = self._backend.AssignOp(operands=(self,)) if op is None else op
 
     def __repr__(self):
         if DEBUG == 0:
@@ -118,7 +118,7 @@ class BaseTensor:
         raise NotImplementedError('__mul__')
 
     def __rmul__(self, other: TensorData) -> Self:
-        raise NotImplementedError('__rmul__')
+        return self * other
 
     def __truediv__(self, other: TensorData) -> Self:
         raise NotImplementedError('__truediv__')

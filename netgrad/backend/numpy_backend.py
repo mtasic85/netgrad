@@ -4,13 +4,16 @@ from .backend import Backend
 from ..defs import TensorData
 from ..op import *
 
+#
+# specialized operations
+#
 class NopOp(Op):
     # FIXME: implement, probably
     pass
 
-class SetOp(Op):
+class AssignOp(Op):
     def __init__(self, operands: list['Tensor'] | tuple['Tensor']=()):
-        super().__init__(SOpCode.set, operands)
+        super().__init__(SOpCode.assign, operands)
 
     def forward(self):
         pass
@@ -18,6 +21,13 @@ class SetOp(Op):
     def backward(self):
         pass
 
+#
+# unary operatons
+#
+
+#
+# binary operations
+#
 class MatMulOp(Op):
     def __init__(self, operands: list['Tensor'] | tuple['Tensor']=()):
         super().__init__(BOpCode.matmul, operands)
@@ -31,7 +41,7 @@ class MatMulOp(Op):
 class NPBackend(Backend):
     # SOp
     NopOp = NopOp
-    SetOp = SetOp
+    AssignOp = AssignOp
 
     # BinOp
     MatMulOp = MatMulOp

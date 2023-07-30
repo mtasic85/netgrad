@@ -4,8 +4,7 @@ from enum import Enum, auto
 
 class SOpCode(Enum):
     nop = auto()
-    set = auto()
-    get = auto()
+    assign = auto()
     eye = auto()
 
 class UOpCode(Enum):

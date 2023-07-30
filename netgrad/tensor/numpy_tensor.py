@@ -45,6 +45,7 @@ class NPTensor(BaseTensor):
 
     def sum(self, axis=None, keepdims=False):
         # https://numpy.org/doc/stable/reference/generated/numpy.sum.html#numpy.sum
+        # op = self._backend.SumOp((self, other))
         return NPTensor(self.data.sum(axis=axis, keepdims=keepdims))
 
     def transpose(self, axis0=1, axis1=0) -> Self:
@@ -70,9 +71,6 @@ class NPTensor(BaseTensor):
             other = NPTensor(other if isinstance(other, (int, float)) else other.data)
 
         return NPTensor(self.data * other.data)
-
-    def __rmul__(self, other: TensorData) -> Self:
-        return self * other
 
     def __truediv__(self, other: TensorData) -> Self:
         if not isinstance(other, NPTensor):
