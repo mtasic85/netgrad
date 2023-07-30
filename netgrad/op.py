@@ -2,6 +2,8 @@ __all__ = ['SOpCode', 'UOpCode', 'BOpCode', 'OpCode', 'OpError', 'Op']
 
 from enum import Enum, auto
 
+from .defs import COMPACT, DEBUG
+
 class SOpCode(Enum):
     assign = auto()
 
@@ -36,9 +38,50 @@ class Op:
         self.opcode = opcode
         self.operands = operands
         self.requires_grad = any(n.requires_grad for n in operands)
+        self.grad = None
+        self.grad_fn = None
 
     def __repr__(self) -> str:
-        return f'<Op opcode={self.opcode} operands={self.operands}>'
+        if DEBUG == 0:
+            return object.__repr__(self)
+
+        # return f'<Op opcode={self.opcode} operands={self.operands}>'
+
+        items = []
+        items.append(type(self).__name__)
+        items.append('(')
+        subitems = []
+
+        if COMPACT:
+            if not self.requires_grad:
+                subitems.append(f'requires_grad={self.requires_grad}')
+
+            if self.grad is not None:
+                subitems.append(f'grad={self.grad}')
+
+            if self.grad_fn is not None:
+                subitems.append(f'grad_fn={self.grad_fn}')
+        else:
+            if DEBUG > 1:
+                subitems.append(f'opcode={self.opcode}')
+
+            if DEBUG > 1:
+                if self.operands:
+                    subitems.append(f'operands={self.operands}')
+
+            if not self.requires_grad:
+                subitems.append(f'requires_grad={self.requires_grad}')
+
+            if DEBUG > 2:
+                if self.grad is not None:
+                    subitems.append(f'grad={self.grad}')
+
+                if self.grad_fn is not None:
+                    subitems.append(f'grad_fn={self.grad_fn}')
+
+        items.append(' '.join(subitems))
+        items.append(')')
+        return ''.join(items)
 
     def forward(self, *args, **kwargs):
         raise NotImplementedError('forward')

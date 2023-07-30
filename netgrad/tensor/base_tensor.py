@@ -18,9 +18,7 @@ class BaseTensor:
 
         self.data = data
         self.requires_grad = requires_grad
-        self._grad = None
-        self._grad_fn = None
-        self._op = self._backend.AssignOp(operands=(self,)) if op is None else op
+        self.op = self._backend.AssignOp(operands=(self,)) if op is None else op
 
     def __repr__(self):
         if DEBUG == 0:
@@ -29,11 +27,7 @@ class BaseTensor:
         items = []
         items.append(type(self).__name__)
         items.append('(')
-
         subitems = []
-
-        if DEBUG > 2:
-            subitems.append(f'data={self.data}')
 
         if COMPACT:
             subitems.append(f'{self.shape}')
@@ -41,29 +35,34 @@ class BaseTensor:
             if self.dtype != np.float32:
                 subitems.append(f'{self.dtype}')
 
-            subitems.append(f'{self._op.opcode}')
+            if not self.requires_grad:
+                subitems.append(f'requires_grad={self.requires_grad}')
+
+            if DEBUG == 1:
+                subitems.append(f'{self.op.opcode.name}')
+            else:
+                subitems.append(f'{self.op}')
         else:
+            if DEBUG > 2:
+                subitems.append(f'data={self.data}')
+
             subitems.append(f'shape={self.shape}')
 
             if self.dtype != np.float32:
                 subitems.append(f'dtype={self.dtype}')
-
+            
             if not self.requires_grad:
                 subitems.append(f'requires_grad={self.requires_grad}')
 
-            if DEBUG > 3:
+            if DEBUG == 1:
+                subitems.append(f'op={self.op.opcode.name}')
+            elif DEBUG > 1:
+                if self.op:
+                    subitems.append(f'op={self.op}')
+
+            if DEBUG > 2:
                 if self._backend:
                     subitems.append(f'_backend={self._backend}')
-
-                if self._grad:
-                    subitems.append(f'_grad={self._grad}')
-
-                if self._grad_fn:
-                    subitems.append(f'_grad_fn={self._grad_fn}')
-
-            if DEBUG > 1:
-                if self._op:
-                    subitems.append(f'_op={self._op}')
 
         items.append(' '.join(subitems))
         items.append(')')
@@ -168,17 +167,6 @@ class BaseTensor:
     @property
     def dtype(self) -> np.dtype:
         return self.data.dtype
-
-    @property
-    def grad(self):
-        return self._grad
-
-    @property
-    def grad_fn(self):
-        if not self.requires_grad:
-            raise TensorError('This tensor is not backpropagated, requires_grad is set to False')
-
-        return self._grad_fn
 
     #
     # propagation
