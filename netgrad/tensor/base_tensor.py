@@ -60,66 +60,22 @@ class BaseTensor:
         items.append(' '.join(subitems))
         items.append(')')
         return ''.join(items)
+    
+    #
+    # specialized operations
+    #
+    @classmethod
+    def eye(cls, dim: int, requires_grad: bool=False, dtype=np.float32) -> Self:
+        raise NotImplementedError('eye')
 
+    #
+    # unary operatons
+    #
     def __pos__(self) -> Self:
         raise NotImplementedError('__pos__')
 
     def __neg__(self) -> Self:
         raise NotImplementedError('__neg__')
-
-    def __add__(self, other: TensorData) -> Self:
-        raise NotImplementedError('__add__')
-
-    def __radd__(self, other: TensorData) -> Self:
-        raise NotImplementedError('__radd__')
-
-    def __sub__(self, other: TensorData) -> Self:
-        raise NotImplementedError('__sub__')
-
-    def __rsub__(self, other: TensorData) -> Self:
-        raise NotImplementedError('__rsub__')
-
-    def __mul__(self, other: TensorData) -> Self:
-        raise NotImplementedError('__mul__')
-
-    def __rmul__(self, other: TensorData) -> Self:
-        raise NotImplementedError('__rmul__')
-
-    def __truediv__(self, other: TensorData) -> Self:
-        raise NotImplementedError('__truediv__')
-
-    def div(self, other: TensorData) -> Self:
-        raise NotImplementedError('div')
-
-    def __rtruediv__(self, other: TensorData) -> Self:
-        raise NotImplementedError('__rtruediv__')
-
-    def __floordiv__(self, other: TensorData) -> Self:
-        raise NotImplementedError('__floordiv__')
-
-    def __rfloordiv__(self, other: TensorData) -> Self:
-        raise NotImplementedError('__rfloordiv__')
-
-    def __pow__(self, other: TensorData) -> Self:
-        raise NotImplementedError('__pow__')
-
-    def pow(self, other: TensorData) -> Self:
-        raise NotImplementedError('pow')
-
-    def __rpow__(self, other: TensorData) -> Self:
-        raise NotImplementedError('__rpow__')
-
-    def __matmul__(self, other: TensorData) -> Self:
-        raise NotImplementedError('__matmul__')
-
-    def matmul(self, other: TensorData) -> Self:
-        raise NotImplementedError('matmul')
-
-    def __eq__(self, other: Self) -> Self:
-        raise NotImplementedError('__eq__')
-
-    def __lt__(self, other: Self) -> Self:
-        raise NotImplementedError('__lt__')
 
     def exp(self) -> Self:
         raise NotImplementedError('exp')
@@ -133,10 +89,6 @@ class BaseTensor:
     def relu(self) -> Self:
         raise NotImplementedError('relu')
 
-    @classmethod
-    def eye(cls, dim: int, requires_grad: bool=False, dtype=np.float32) -> Self:
-        raise NotImplementedError('eye')
-
     def sum(self, axis=None, keepdims=False):
         raise NotImplementedError('sum')
 
@@ -147,6 +99,66 @@ class BaseTensor:
     def T(self):
         return self.transpose()
 
+    #
+    # binary operations
+    #
+    def __add__(self, other: TensorData) -> Self:
+        raise NotImplementedError('__add__')
+
+    def __radd__(self, other: TensorData) -> Self:
+        return self + other
+
+    def __sub__(self, other: TensorData) -> Self:
+        raise NotImplementedError('__sub__')
+
+    def __rsub__(self, other: TensorData) -> Self:
+        return self - other
+
+    def __mul__(self, other: TensorData) -> Self:
+        raise NotImplementedError('__mul__')
+
+    def __rmul__(self, other: TensorData) -> Self:
+        raise NotImplementedError('__rmul__')
+
+    def __truediv__(self, other: TensorData) -> Self:
+        raise NotImplementedError('__truediv__')
+
+    def div(self, other: TensorData) -> Self:
+        return self.__truediv__(other)
+
+    def __rtruediv__(self, other: TensorData) -> Self:
+        return self / other
+
+    def __floordiv__(self, other: TensorData) -> Self:
+        raise NotImplementedError('__floordiv__')
+
+    def __rfloordiv__(self, other: TensorData) -> Self:
+        return self // other
+
+    def __pow__(self, other: TensorData) -> Self:
+        raise NotImplementedError('__pow__')
+
+    def pow(self, other: TensorData) -> Self:
+        return self.__pow__(other)
+
+    def __rpow__(self, other: TensorData) -> Self:
+        return self ** other
+
+    def __matmul__(self, other: TensorData) -> Self:
+        raise NotImplementedError('__matmul__')
+
+    def matmul(self, other: TensorData) -> Self:
+        return self.__matmul__(other)
+
+    def __eq__(self, other: Self) -> Self:
+        raise NotImplementedError('__eq__')
+
+    def __lt__(self, other: Self) -> Self:
+        raise NotImplementedError('__lt__')
+
+    #
+    # properties
+    #
     def numpy(self) -> np.ndarray:
         return self.data
 
@@ -169,5 +181,8 @@ class BaseTensor:
 
         return self._grad_fn
 
+    #
+    # propagation
+    #
     def backward(self):
         raise NotImplementedError('backward')

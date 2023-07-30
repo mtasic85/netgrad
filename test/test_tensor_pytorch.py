@@ -3,7 +3,18 @@ import torch
 
 from netgrad import NPTensor as Tensor
 
+#
+# specialized operations
+#
+def test_eye():
+    a_n = Tensor.eye(3)
+    a_t = torch.eye(3)
+    
+    np.testing.assert_allclose(a_n.numpy(), a_t.numpy())
 
+#
+# unary operatons
+#
 def test_pos():
     a_n = Tensor([1, 2, 3])
     b_n = +a_n
@@ -22,6 +33,72 @@ def test_neg():
     
     np.testing.assert_allclose(b_n.numpy(), b_t.numpy())
 
+def test_exp():
+    a_n = Tensor([1, 2, 3])
+    b_n = a_n.exp()
+
+    a_t = torch.Tensor([1, 2, 3])
+    b_t = a_t.exp()
+    
+    np.testing.assert_allclose(b_n.numpy(), b_t.numpy())
+
+def test_tanh():
+    a_n = Tensor([1, 2, 3])
+    b_n = a_n.tanh()
+
+    a_t = torch.Tensor([1, 2, 3])
+    b_t = a_t.tanh()
+    
+    np.testing.assert_allclose(b_n.numpy(), b_t.numpy())
+
+def test_sigmoid():
+    a_n = Tensor([1, 2, 3])
+    b_n = a_n.sigmoid()
+
+    a_t = torch.Tensor([1, 2, 3])
+    b_t = a_t.sigmoid()
+    
+    np.testing.assert_allclose(b_n.numpy(), b_t.numpy())
+
+def test_relu():
+    a_n = Tensor([1, 2, 3])
+    b_n = a_n.relu()
+
+    a_t = torch.Tensor([1, 2, 3])
+    b_t = a_t.relu()
+    
+    np.testing.assert_allclose(b_n.numpy(), b_t.numpy())
+
+def test_sum():
+    a_n = Tensor([[1, 2, 3], [2, 3, 4]])
+    b_n = a_n.sum()
+
+    a_t = torch.Tensor([[1, 2, 3], [2, 3, 4]])
+    b_t = a_t.sum()
+    
+    np.testing.assert_allclose(b_n.numpy(), b_t.numpy())
+
+def test_transpose():
+    a_n = Tensor([[1, 2, 3], [2, 3, 4]])
+    b_n = a_n.transpose(1, 0)
+
+    a_t = torch.Tensor([[1, 2, 3], [2, 3, 4]])
+    b_t = a_t.transpose(1, 0)
+    
+    np.testing.assert_allclose(b_n.numpy(), b_t.numpy())
+
+def test_T():
+    a_n = Tensor([[1, 2, 3], [2, 3, 4]])
+    b_n = a_n.T
+
+    a_t = torch.Tensor([[1, 2, 3], [2, 3, 4]])
+    b_t = a_t.T
+    
+    np.testing.assert_allclose(b_n.numpy(), b_t.numpy())
+
+#
+# binary operations
+#
 def test_add():
     a_n = Tensor([1, 2, 3])
     b_n = Tensor([2, 3, 4])
@@ -197,72 +274,3 @@ def test_lt():
     c_t = a_t < b_t
     
     np.testing.assert_allclose(c_n.numpy(), c_t.numpy())
-
-def test_exp():
-    a_n = Tensor([1, 2, 3])
-    b_n = a_n.exp()
-
-    a_t = torch.Tensor([1, 2, 3])
-    b_t = a_t.exp()
-    
-    np.testing.assert_allclose(b_n.numpy(), b_t.numpy())
-
-def test_tanh():
-    a_n = Tensor([1, 2, 3])
-    b_n = a_n.tanh()
-
-    a_t = torch.Tensor([1, 2, 3])
-    b_t = a_t.tanh()
-    
-    np.testing.assert_allclose(b_n.numpy(), b_t.numpy())
-
-def test_sigmoid():
-    a_n = Tensor([1, 2, 3])
-    b_n = a_n.sigmoid()
-
-    a_t = torch.Tensor([1, 2, 3])
-    b_t = a_t.sigmoid()
-    
-    np.testing.assert_allclose(b_n.numpy(), b_t.numpy())
-
-def test_relu():
-    a_n = Tensor([1, 2, 3])
-    b_n = a_n.relu()
-
-    a_t = torch.Tensor([1, 2, 3])
-    b_t = a_t.relu()
-    
-    np.testing.assert_allclose(b_n.numpy(), b_t.numpy())
-
-def test_eye():
-    a_n = Tensor.eye(3)
-    a_t = torch.eye(3)
-    
-    np.testing.assert_allclose(a_n.numpy(), a_t.numpy())
-
-def test_sum():
-    a_n = Tensor([[1, 2, 3], [2, 3, 4]])
-    b_n = a_n.sum()
-
-    a_t = torch.Tensor([[1, 2, 3], [2, 3, 4]])
-    b_t = a_t.sum()
-    
-    np.testing.assert_allclose(b_n.numpy(), b_t.numpy())
-
-def test_transpose():
-    a_n = Tensor([[1, 2, 3], [2, 3, 4]])
-    b_n = a_n.transpose(1, 0)
-
-    a_t = torch.Tensor([[1, 2, 3], [2, 3, 4]])
-    b_t = a_t.transpose(1, 0)
-    
-    np.testing.assert_allclose(b_n.numpy(), b_t.numpy())
-
-def test_T():
-    a_n = Tensor([[1, 2, 3], [2, 3, 4]])
-    b_n = a_n.T
-
-    a_t = torch.Tensor([[1, 2, 3], [2, 3, 4]])
-    b_t = a_t.T
-    
-    np.testing.assert_allclose(b_n.numpy(), b_t.numpy())
