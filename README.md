@@ -1,6 +1,6 @@
 # netgrad
 
-A (not even a toy) autograd engine.
+A (Not Even a Toy for now) autograd engine.
 
 
 ## Development

@@ -1,0 +1,23 @@
+[tool.poetry]
+name = "netgrad"
+version = "0.1.0"
+description = "A (Not Even a Toy for now) autograd engine."
+authors = ["Marko Tasic <mtasic85@gmail.com>"]
+license = "MIT"
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.11"
+numpy = "^1.25.2"
+pyopencl = "^2023.1.1"
+
+[tool.poetry.group.test.dependencies]
+pytest = "^7.4.0"
+torch = "^2.0.1"
+
+[tool.poetry.group.dev.dependencies]
+mypy = "^1.4.1"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
