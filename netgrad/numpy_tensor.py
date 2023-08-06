@@ -1,6 +1,6 @@
-__all__ = ['NumPyTensor']
+__all__ = ['NPTensor']
 
-from .base_tensor import BaseTensor
+from .tensor import Tensor
 
-class NumPyTensor(BaseTensor):
+class NPTensor(Tensor):
     pass

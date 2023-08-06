@@ -6,6 +6,16 @@ authors = ["Marko Tasic <mtasic85@gmail.com>"]
 license = "MIT"
 readme = "README.md"
 
+[[tool.poetry.source]]
+name = "torch_cpu"
+url = "https://download.pytorch.org/whl/cpu"
+priority = "supplemental"
+
+
+[[tool.poetry.source]]
+name = "PyPI"
+priority = "primary"
+
 [tool.poetry.dependencies]
 python = "^3.11"
 numpy = "^1.25.2"
@@ -13,7 +23,7 @@ pyopencl = "^2023.1.1"
 
 [tool.poetry.group.test.dependencies]
 pytest = "^7.4.0"
-torch = "^2.0.1"
+torch = { version = ">=2.0.1", source="torch_cpu" }
 
 [tool.poetry.group.dev.dependencies]
 mypy = "^1.4.1"

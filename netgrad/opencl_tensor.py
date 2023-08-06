@@ -1,6 +1,6 @@
-__all__ = ['OpenCLTensor']
+__all__ = ['CLTensor']
 
-from .base_tensor import BaseTensor
+from .tensor import Tensor
 
-class OpenCLTensor(BaseTensor):
+class CLTensor(Tensor):
     pass
