@@ -4,21 +4,24 @@ from typing import Self
 
 import numpy as np
 
-from .defs import TensorData
+from .defs import TensorData, COMPACT, DEBUG
 from .op import Op
 
 class TensorError(Exception):
     pass
 
 class Tensor:
-    def __init__(self, data: TensorData, *, dtype=np.float32, requires_grad: bool=False, op: Op=None):
+    data: np.ndarray
+    requires_grad: bool
+    op: Op | None
+
+    def __init__(self, data: TensorData, *, dtype=np.float32, requires_grad: bool=False, op: Op | None=None):
         if not isinstance(data, np.ndarray):
             data = np.array(data, dtype=dtype)
 
         self.data = data
         self.requires_grad = requires_grad
-        self.op = self.AssignOp(operands=(self,)) if op is None else op
-        # self.grad = None
+        self.op = op
 
     def __repr__(self):
         if DEBUG == 0:
@@ -195,3 +198,13 @@ class Tensor:
     @property
     def dtype(self) -> np.dtype:
         return self.data.dtype
+
+    @property
+    def grad(self) -> Self:
+        return self.op.grad
+    
+    #
+    # propagation
+    #
+    def backward(self) -> Self:
+        raise NotImplementedError('backward')
